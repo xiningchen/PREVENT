@@ -65,11 +65,13 @@ def load_meta_data():
     for i in meta_data['Subject ID']:
         id = str(i)
         if len(id) < 3:
-            id = '0' * (3 - len(id)) + id
+            id = '0'*(3-len(id))+id
         ids.append(id)
     meta_data['Subject ID'] = ids
-    meta_data.set_index('Subject ID')
-    regionList = pd.read_excel('../../PREVENT_Study/data/RegionList.xlsx', index_col=None, header=None)
+    meta_data = meta_data.set_index(['Subject ID'])
+    DIAGNOSIS = {'T': 'P', 'C': 'HC'}
+    meta_data['C/T'] = meta_data['C/T'].replace(DIAGNOSIS)
+    regionList = pd.read_excel('../../PREVENT_Study/data/NodeList.xlsx', index_col=None, header=None)
     return meta_data, list(regionList[0])
 
 
@@ -140,24 +142,28 @@ def get_icn_map():
         return node_icn_map, icn_node_map
 
 
-def linear_model(data_df, xlabel, ylabel):
-    # remove x-axis outliers
-    x = list(data_df[xlabel])
-    stddev = stats.stdev(x)
-    model_df = data_df[data_df[xlabel] < 3 * stddev]
+def linear_model(data_df, xlabel, ylabel, remove_outliers=3):
+    if remove_outliers > 0:
+        # remove x-axis outliers
+        y = list(data_df[ylabel])
+        stddev = stats.stdev(y)
+        mean = stats.mean(y)
+        model_df = data_df[(data_df[ylabel] < mean + 3 * stddev) & (data_df[ylabel] > mean - 3 * stddev)]
 
-    # remove y-axis outliers
-    x = list(data_df[ylabel])
-    stddev = stats.stdev(x)
-    model_df = model_df[model_df[ylabel] < 3 * stddev]
-
+        # remove y-axis outliers
+        # x = list(data_df[ylabel])
+        # stddev = stats.stdev(x)
+        # print("y std: ", stddev)
+        # model_df = model_df[model_df[ylabel] < 3 * stddev]
+    else:
+        model_df = data_df
     x_fit = np.array(model_df[xlabel])
     y_fit = np.array(model_df[ylabel])
     if len(x_fit) == 0 or len(y_fit) == 0:
         print(f"No data for {xlabel}, {ylabel}")
         return None
     slope, intercept, _, p, stderr = linregress(x_fit, y_fit)
-    return slope, intercept, p, stderr
+    return slope, intercept, p, stderr, len(x_fit)
 
 
 def get_avg_node_metric(G, node_list, metric):
