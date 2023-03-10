@@ -28,11 +28,11 @@ ICN_COLORS = {'auditory': 'lightpink',
 def rank_nodes(G, attr='weight'):
     """
     Given a graph G and some nodal attribute, rank all nodes from highest rank (n) to smallest rank (0).
-    Store the rank value as a new node attribute. If the ranking failed (any node couldn't be assigned a rank), then
-    return a failed (False) flag.
+    Store the rank value as a new node attribute. If the nodal attribute contains 0s, then there is no specific order in
+    to rank these nodes. This will cause the ranking to fail. All such nodes will be ranked with 0.
     :param G: Networkx graph object
     :param attr: Nodal attribute key
-    :return: whether the ranking succeeded (boolean), the updated graph G, if ranking failed, a list of nodes where the
+    :return: whether the ranking succeeded (boolean); the updated graph G; if ranking failed, a list of nodes where the
     rank could not be assigned.
     """
     if attr == 'weight':
@@ -45,13 +45,17 @@ def rank_nodes(G, attr='weight'):
     success = True
     badRegions = []
     attrTag = attr + 'Rank'
+    offset = 0
     for i, e in enumerate(seq):
-        nodeRank[e[0]] = {attrTag: rank[i]}
         if e[1] == 0:
             badRegions.append(e[0])
+            nodeRank[e[0]] = {attrTag: 0}
+            offset += 1
             success = False
-    if success:
-        nx.set_node_attributes(G, nodeRank)
+            continue
+        nodeRank[e[0]] = {attrTag: rank[i-offset]}
+
+    nx.set_node_attributes(G, nodeRank)
     return success, G, badRegions
 
 
