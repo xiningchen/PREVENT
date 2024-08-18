@@ -1,2 +1,2 @@
-# PREVENT
-Prevent study: early bio-marker for dementia using network controllability. How does the structural brain network change in those who experienced a single TIA/minor stroke?
+# PREVENT Study
+The prevent study aims to address brain vulnerability to cognitive decline after transient ischemic attack. This repository contains data pre-processing and analysis used in the PREVENT study for my Master's thesis. 
