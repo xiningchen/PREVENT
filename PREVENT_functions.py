@@ -1,7 +1,7 @@
 import numpy as np
 import networkx as nx
 import importlib
-import controllability as ctrb
+import Towlson_group_code.controllability as ctrb
 import pandas as pd
 import pickle as pkl
 import statistics as stats
@@ -174,30 +174,30 @@ def get_avg_node_metric(G, node_list, metric):
     values = [G.nodes[node][metric] for node in node_list]
     return sum(values) / len(values)
 
-
-def get_icn_intra_connectivity(G, node_list):
-    stuff = nx.get_edge_attributes(G, "weight")
-    w = 0
-    num = 0
-    for edge, v in stuff.items():
-        if (edge[0] in node_list) and (edge[1] in node_list):
-            w += v
-            num += 1
-    return w / num
-
-
-def get_icn_inter_connectivity(G, node_list1, node_list2):
-    stuff = nx.get_edge_attributes(G, "weight")
-    w = 0
-    num = 0
-    for edge, v in stuff.items():
-        if (edge[0] in node_list1) and (edge[1] in node_list2):
-            w += v
-            num += 1
-        elif (edge[1] in node_list1) and (edge[0] in node_list2):
-            w += v
-            num += 1
-    return w/num
+# ---------------------------------------------- WRONG DEFINITION ---- SEE brain_network.py
+# def get_icn_intra_connectivity(G, node_list):
+#     stuff = nx.get_edge_attributes(G, "weight")
+#     w = 0
+#     num = 0
+#     for edge, v in stuff.items():
+#         if (edge[0] in node_list) and (edge[1] in node_list):
+#             w += v
+#             num += 1
+#     return w / num
+#
+#
+# def get_icn_inter_connectivity(G, node_list1, node_list2):
+#     stuff = nx.get_edge_attributes(G, "weight")
+#     w = 0
+#     num = 0
+#     for edge, v in stuff.items():
+#         if (edge[0] in node_list1) and (edge[1] in node_list2):
+#             w += v
+#             num += 1
+#         elif (edge[1] in node_list1) and (edge[0] in node_list2):
+#             w += v
+#             num += 1
+#     return w/num
 
 
 def get_global_weight(G):
